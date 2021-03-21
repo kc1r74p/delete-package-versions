@@ -34,6 +34,18 @@ inputs:
     required: false
     default: "1"
 
+  package-type:
+    description: >
+      Specify 'container' if you want to delete a package from ghcr.io.
+      Only in use if ghcr.io is the target.
+    required: false
+
+  ignore-tag:
+    description: >
+      Specify a tag name which should not be removed
+      Only in use if container is the package type.
+    required: false
+
   token:
     description: >
       Token with the necessary scopes to delete package versions.
