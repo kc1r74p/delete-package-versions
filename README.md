@@ -39,6 +39,16 @@ This action deletes versions of a package from [GitHub Packages](https://github.
   # Defaults to 1.
   num-old-versions-to-delete:
 
+  # specify 'container' if you want to delete a package from ghcr.io
+  # Defaults to empty string.
+  # Only in use if ghcr.io is the target
+  package-type:
+
+  # specify a tag name which should not be removed
+  # Defaults to 'latest' string.
+  # Required if ghcr.io is the target
+  ignore-tag:
+
   # The token used to authenticate with GitHub Packages.
   # Defaults to github.token.
   # Required if deleting a version from a package hosted in a different repo than the one executing the workflow.
@@ -155,6 +165,15 @@ __Example__
     owner: 'github'
     repo: 'packages'
     package-name: 'test-package'
+    token: ${{ secrets.GITHUB_PAT }}
+```
+or for ghcr.io
+```yaml
+- uses: actions/delete-package-versions@v1
+  with:
+    package-name: 'test-package'
+    package-type: 'container'
+    ignore-tag: 'latest'
     token: ${{ secrets.GITHUB_PAT }}
 ```
 

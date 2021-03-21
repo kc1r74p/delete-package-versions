@@ -13,7 +13,9 @@ export function getVersionIds(input: Input): Observable<string[]> {
       input.owner,
       input.repo,
       input.packageName,
+      input.packageType,
       input.numOldVersionsToDelete,
+      input.ignoreTag,
       input.token
     ).pipe(map(versionInfo => versionInfo.map(info => info.id)))
   }
@@ -36,6 +38,13 @@ export function deleteVersions(input: Input): Observable<boolean> {
   }
 
   return getVersionIds(input).pipe(
-    concatMap(ids => deletePackageVersions(ids, input.token))
+    concatMap(ids =>
+      deletePackageVersions(
+        ids,
+        input.packageName,
+        input.packageType,
+        input.token
+      )
+    )
   )
 }

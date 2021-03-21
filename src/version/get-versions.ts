@@ -2,6 +2,7 @@ import {GraphQlQueryResponse} from '@octokit/graphql/dist-types/types'
 import {Observable, from, throwError} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 import {graphql} from './graphql'
+import {restGet} from './rest'
 
 export interface VersionInfo {
   id: string
@@ -73,38 +74,73 @@ export function queryForOldestVersions(
   )
 }
 
+export function queryForOldestContainerVersions(
+  packageName: string,
+  token: string
+): Observable<Response> {
+  return from(restGet(token, packageName)).pipe(
+    catchError((err: Response) => {
+      const msg = 'query for oldest version failed.'
+      return throwError(
+        err.body && err.body
+          ? `${msg} ${err.body}`
+          : `${msg} verify input parameters are correct`
+      )
+    })
+  )
+}
+
 export function getOldestVersions(
   owner: string,
   repo: string,
   packageName: string,
+  packageType: string,
   numVersions: number,
+  ignoreTag: string | null,
   token: string
 ): Observable<VersionInfo[]> {
-  return queryForOldestVersions(
-    owner,
-    repo,
-    packageName,
-    numVersions,
-    token
-  ).pipe(
-    map(result => {
-      if (result.repository.packages.edges.length < 1) {
-        throwError(
-          `package: ${packageName} not found for owner: ${owner} in repo: ${repo}`
-        )
-      }
+  if (packageType === 'container') {
+    return from(
+      <Observable<VersionInfo[]>>queryForOldestContainerVersions(
+        packageName,
+        token
+      ).pipe(
+        map((result: any) => {
+          return result.data
+            .filter(
+              (v: any) =>
+                !(ignoreTag && v.metadata.container.tags.includes(ignoreTag))
+            )
+            .map((v: any) => ({id: v.id, version: v.name}))
+            .reverse()
+            .slice(0, numVersions)
+        })
+      )
+    )
+  } else {
+    return from(
+      queryForOldestVersions(owner, repo, packageName, numVersions, token).pipe(
+        map(result => {
+          if (result.repository.packages.edges.length < 1) {
+            throwError(
+              `package: ${packageName} not found for owner: ${owner} in repo: ${repo}`
+            )
+          }
 
-      const versions = result.repository.packages.edges[0].node.versions.edges
+          const versions =
+            result.repository.packages.edges[0].node.versions.edges
 
-      if (versions.length !== numVersions) {
-        console.log(
-          `number of versions requested was: ${numVersions}, but found: ${versions.length}`
-        )
-      }
+          if (versions.length !== numVersions) {
+            console.log(
+              `number of versions requested was: ${numVersions}, but found: ${versions.length}`
+            )
+          }
 
-      return versions
-        .map(value => ({id: value.node.id, version: value.node.version}))
-        .reverse()
-    })
-  )
+          return versions
+            .map(value => ({id: value.node.id, version: value.node.version}))
+            .reverse()
+        })
+      )
+    )
+  }
 }
