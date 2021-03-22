@@ -6498,7 +6498,6 @@ const mutation = `
   }`;
 function deletePackageVersion(packageVersionId, packageName, packageType, token) {
     if (packageType === 'container') {
-        console.log('try to delete: ', packageVersionId);
         return rxjs_1.from(rest_1.restDelete(token, packageName, packageVersionId)).pipe(operators_1.catchError((err) => {
             const msg = 'delete version REST failed.';
             return rxjs_1.throwError(err.body && err.body
@@ -15842,7 +15841,6 @@ function getVersionIds(input) {
     if (input.packageVersionIds.length > 0) {
         return rxjs_1.of(input.packageVersionIds);
     }
-    core_1.info('Using package type: ' + input.packageType);
     if (input.hasOldestVersionQueryInfo()) {
         return version_1.getOldestVersions(input.owner, input.repo, input.packageName, input.packageType, input.numOldVersionsToDelete, input.ignoreTag, input.token).pipe(operators_1.map(versionInfo => versionInfo.map(info => info.id)));
     }
@@ -16234,7 +16232,6 @@ function queryForOldestContainerVersions(packageName, token) {
 }
 exports.queryForOldestContainerVersions = queryForOldestContainerVersions;
 function getOldestVersions(owner, repo, packageName, packageType, numVersions, ignoreTag, token) {
-    console.log('get versions for: ', packageType);
     if (packageType === 'container') {
         return rxjs_1.from(queryForOldestContainerVersions(packageName, token).pipe(operators_1.map((result) => {
             return result.data

@@ -25,7 +25,6 @@ export function deletePackageVersion(
   token: string
 ): Observable<boolean> {
   if (packageType === 'container') {
-    console.log('try to delete: ', packageVersionId)
     return from(restDelete(token, packageName, packageVersionId)).pipe(
       catchError((err: Response) => {
         const msg = 'delete version REST failed.'

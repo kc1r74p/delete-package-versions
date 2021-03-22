@@ -99,7 +99,6 @@ export function getOldestVersions(
   ignoreTag: string | null,
   token: string
 ): Observable<VersionInfo[]> {
-  console.log('get versions for: ', packageType);
   if (packageType === 'container') {
     return from(
       <Observable<VersionInfo[]>>queryForOldestContainerVersions(
