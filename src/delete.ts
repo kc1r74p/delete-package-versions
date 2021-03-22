@@ -8,6 +8,7 @@ export function getVersionIds(input: Input): Observable<string[]> {
     return of(input.packageVersionIds)
   }
 
+  console.log('Searching packageType:', input.packageType);
   if (input.hasOldestVersionQueryInfo()) {
     return getOldestVersions(
       input.owner,
