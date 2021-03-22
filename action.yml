@@ -45,6 +45,7 @@ inputs:
       Specify a tag name which should not be removed
       Only in use if container is the package type.
     required: false
+    default: "latest"
 
   token:
     description: >
