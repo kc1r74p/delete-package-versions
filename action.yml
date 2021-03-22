@@ -1,5 +1,5 @@
 
-name: Delete Package Versions
+name: Delete Package Versions - GHCR support
 
 description: Deletes package versions
 
