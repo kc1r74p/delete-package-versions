@@ -2,13 +2,14 @@ import {Input} from './input'
 import {Observable, of, throwError} from 'rxjs'
 import {deletePackageVersions, getOldestVersions} from './version'
 import {concatMap, map} from 'rxjs/operators'
+import { info } from '@actions/core'
 
 export function getVersionIds(input: Input): Observable<string[]> {
   if (input.packageVersionIds.length > 0) {
     return of(input.packageVersionIds)
   }
 
-  console.log('Searching packageType:', input.packageType);
+  info('Using package type: ' + input.packageType);
   if (input.hasOldestVersionQueryInfo()) {
     return getOldestVersions(
       input.owner,
@@ -38,6 +39,7 @@ export function deleteVersions(input: Input): Observable<boolean> {
     return of(true)
   }
 
+  info('Fetching package versions...');
   return getVersionIds(input).pipe(
     concatMap(ids =>
       deletePackageVersions(

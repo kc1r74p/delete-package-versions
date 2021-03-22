@@ -3,6 +3,7 @@ import {catchError, map, tap} from 'rxjs/operators'
 import {GraphQlQueryResponse} from '@octokit/graphql/dist-types/types'
 import {graphql} from './graphql'
 import {restDelete} from './rest'
+import { info } from '@actions/core'
 
 export interface DeletePackageVersionMutationResponse {
   deletePackageVersion: {
@@ -69,6 +70,7 @@ export function deletePackageVersions(
     return of(true)
   }
 
+  info('Deleting package versions: ' + packageVersionIds.join(', '));
   const deletes = packageVersionIds.map(id =>
     deletePackageVersion(id, packageName, packageType, token).pipe(
       tap(result => {
