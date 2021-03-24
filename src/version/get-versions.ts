@@ -77,9 +77,10 @@ export function queryForOldestVersions(
 
 export function queryForOldestContainerVersions(
   packageName: string,
+  userName: string,
   token: string
 ): Observable<Response> {
-  return from(restGet(token, packageName)).pipe(
+  return from(restGet(token, userName, packageName)).pipe(
     catchError((err: Response) => {
       info(<any>err);
       const msg = 'container query for oldest version failed.'
@@ -103,8 +104,9 @@ export function getOldestVersions(
 ): Observable<VersionInfo[]> {
   if (packageType === 'container') {
     return from(
-      <Observable<VersionInfo[]>>queryForOldestContainerVersions(
+      queryForOldestContainerVersions(
         packageName,
+        owner,
         token
       ).pipe(
         map((result: any) => {

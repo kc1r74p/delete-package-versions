@@ -2,13 +2,15 @@ import {GitHub} from '@actions/github'
 
 export async function restGet(
   token: string,
+  userName: string,
   packageName: string
 ): Promise<any> {
   const github = new GitHub(token)
   return await github.request(
-    'GET /user/packages/{packageType}/{packageName}/versions',
+    'GET /users/{userName}/packages/{packageType}/{packageName}/versions',
     {
       packageType: 'container',
+      userName: userName,
       packageName: packageName
     }
   )

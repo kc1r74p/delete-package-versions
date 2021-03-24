@@ -16223,10 +16223,10 @@ function queryForOldestVersions(owner, repo, packageName, numVersions, token) {
     }));
 }
 exports.queryForOldestVersions = queryForOldestVersions;
-function queryForOldestContainerVersions(packageName, token) {
-    return rxjs_1.from(rest_1.restGet(token, packageName)).pipe(operators_1.catchError((err) => {
+function queryForOldestContainerVersions(packageName, userName, token) {
+    return rxjs_1.from(rest_1.restGet(token, userName, packageName)).pipe(operators_1.catchError((err) => {
         core_1.info(err);
-        const msg = 'query for oldest version failed.';
+        const msg = 'container query for oldest version failed.';
         return rxjs_1.throwError(err.body && err.body
             ? `${msg} ${err.body}`
             : `${msg} verify input parameters are correct`);
@@ -16235,7 +16235,7 @@ function queryForOldestContainerVersions(packageName, token) {
 exports.queryForOldestContainerVersions = queryForOldestContainerVersions;
 function getOldestVersions(owner, repo, packageName, packageType, numVersions, ignoreTag, token) {
     if (packageType === 'container') {
-        return rxjs_1.from(queryForOldestContainerVersions(packageName, token).pipe(operators_1.map((result) => {
+        return rxjs_1.from(queryForOldestContainerVersions(packageName, owner, token).pipe(operators_1.map((result) => {
             return result.data
                 .filter((v) => !(ignoreTag && v.metadata.container.tags.includes(ignoreTag)))
                 .map((v) => ({ id: v.id, version: v.name }))
@@ -34468,11 +34468,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const github_1 = __webpack_require__(469);
-function restGet(token, packageName) {
+function restGet(token, userName, packageName) {
     return __awaiter(this, void 0, void 0, function* () {
         const github = new github_1.GitHub(token);
-        return yield github.request('GET /user/packages/{packageType}/{packageName}/versions', {
+        return yield github.request('GET /users/{userName}/packages/{packageType}/{packageName}/versions', {
             packageType: 'container',
+            userName: userName,
             packageName: packageName
         });
     });
