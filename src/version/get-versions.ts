@@ -1,3 +1,4 @@
+import { info } from '@actions/core'
 import {GraphQlQueryResponse} from '@octokit/graphql/dist-types/types'
 import {Observable, from, throwError} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
@@ -80,7 +81,8 @@ export function queryForOldestContainerVersions(
 ): Observable<Response> {
   return from(restGet(token, packageName)).pipe(
     catchError((err: Response) => {
-      const msg = 'query for oldest version failed.'
+      info(<any>err);
+      const msg = 'container query for oldest version failed.'
       return throwError(
         err.body && err.body
           ? `${msg} ${err.body}`

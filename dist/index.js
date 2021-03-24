@@ -16181,6 +16181,7 @@ exports.zip = zip;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = __webpack_require__(470);
 const rxjs_1 = __webpack_require__(931);
 const operators_1 = __webpack_require__(43);
 const graphql_1 = __webpack_require__(767);
@@ -16224,6 +16225,7 @@ function queryForOldestVersions(owner, repo, packageName, numVersions, token) {
 exports.queryForOldestVersions = queryForOldestVersions;
 function queryForOldestContainerVersions(packageName, token) {
     return rxjs_1.from(rest_1.restGet(token, packageName)).pipe(operators_1.catchError((err) => {
+        core_1.info(err);
         const msg = 'query for oldest version failed.';
         return rxjs_1.throwError(err.body && err.body
             ? `${msg} ${err.body}`
